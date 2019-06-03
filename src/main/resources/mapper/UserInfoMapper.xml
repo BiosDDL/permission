@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.UserInfoMapper">
+    <!--<resultMap id="roleInfoVoMap" type="com.qf.vo.RoleInfoVo">
+        <id column="ROLEID" property="roleId"></id>
+        <result column="ROLENAME" property="roleName"></result>
+        <result column="SHORTNAME" property="shortName"></result>
+        <result column="flag" property="isSelect"></result>
+    </resultMap>-->
+
+    <!--<resultMap id="userInfoMap" type="com.qf.pojo.UserInfo">
+        <id column="USERID" property="userId"></id>
+        <result column="USERNAME" property="userName"></result>
+        <result column="PASSWORD" property="password"></result>
+        <result column="REGEMAIL" property="regEmail"></result>
+        <result column="MOBILE" property="mobile"></result>
+        <result column="ICON" property="icon"></result>
+        <collection property="roleInfoList" ofType="com.qf.pojo.RoleInfo">
+            <id column="ROLEID" property="roleId"></id>
+            <result column="ROLENAME" property="roleName"></result>
+            <result column="SHORTNAME" property="shortName"></result>
+        </collection>
+    </resultMap>-->
+    <insert id="registerUserInfo" parameterType="com.qf.vo.UserInfoVo">
+        insert into userinfo values (default ,#{userName},#{password},#{regEmail},#{mobile},#{icon})
+    </insert>
+
+    <select id="searchUserInfo" parameterType="String" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo
+        where username=#{value}or regEmail=#{value} or password = #{value}
+    </select>
+
+    <insert id="insertRole" parameterType="int">
+        insert into user_role values (default ,#{userId},#{roleId})
+    </insert>
+
+    <select id="findSelectRoleByUserId" parameterType="int" resultType="com.qf.dto.RoleDto">
+        SELECT r.*,ISNULL(userid) ISNULL FROM user_role ur RIGHT JOIN roleinfo r ON ur.roleid=r.roleid
+        AND userid=#{userId}
+    </select>
+
+    <delete id="deleteUserInfo" parameterType="int">
+        delete from userinfo where userId=#{userId}
+    </delete>
+
+    <update id="updateUserInfo" parameterType="com.qf.pojo.UserInfo">
+        update userinfo
+        <set>
+            username=#{userName},
+            password=#{password},
+            regEmail=#{regEmail},
+            mobile=#{mobile}
+        </set>
+        where userId = #{userId}
+    </update>
+
+    <select id="getUserInfoById" parameterType="int" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo where userid=#{userId}
+    </select>
+
+
+    <select id="listAllUserInfo" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo
+    </select>
+
+
+    <insert id="addUserInfo" parameterType="com.qf.pojo.UserInfo">
+        insert into userinfo values (
+        default ,
+        <trim suffixOverrides=",">
+        #{userName},
+        #{password},
+        #{regEmail},
+        #{mobile},
+        #{icon},
+        </trim>
+        )
+    </insert>
+
+
+    <update id="updateUser" parameterType="com.qf.vo.UserInfoVo">
+        update userinfo
+        <set>
+            <if test="userName != null and userName != ''">
+                USERNAME=#{userName},
+            </if>
+            <if test="password != null and password != ''">
+                PASSWORD=#{password}
+            </if>
+        </set>
+        where userid = #{id}
+    </update>
+
+
+    <select id="userLogin" parameterType="com.qf.vo.UserInfoVo" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo where username=#{userName} and password=#{password}
+    </select>
+
+    <update id="editUser" parameterType="com.qf.vo.UserInfoVo">
+        update userinfo set username=#{userName},password=#{password},regemail=#{regEmail} where userid=#{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="com.qf.vo.UserInfoVo">
+        delete from userinfo where userid=#{id}
+    </delete>
+
+    <insert id="addUser" parameterType="com.qf.vo.UserInfoVo">
+        insert into userinfo(USERNAME,PASSWORD,REGEMAIL) values (#{userName},#{password},#{regEmail})
+    </insert>
+
+    <!--<select id="listRoleByUserId" parameterType="int" resultMap="roleInfoVoMap">
+        SELECT r1.*,tb1.shortname FROM(SELECT r.* FROM userinfo u,user_role ur,roleinfo r
+        WHERE u.userid=ur.userid AND ur.roleid = r.roleid AND u.userid=#{userId})
+        AS tb1 RIGHT JOIN roleinfo r1 ON r1.roleid=tb1.roleid;
+    </select>-->
+    
+    <!--<select id="listUserInfoRole" resultMap="userInfoMap">
+        SELECT u.*,r.* FROM userinfo u,user_role ur,roleinfo r
+        WHERE u.userid=ur.userid AND r.roleid=ur.roleid
+    </select>-->
+
+    <select id="listUserInfoSplitePage" parameterType="com.qf.vo.SearchUserInfoVo" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo
+        <where>
+            <if test="email != null and email !=''">
+                regemail like ${email}
+            </if>
+        </where>
+        limit #{start},#{pageSize}
+    </select>
+</mapper>

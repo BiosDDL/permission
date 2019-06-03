@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+</head>
+<body>
+<table border="1" id="shopping">
+    <caption>购物车</caption>
+    <thead>
+    <tr>
+        <th width="50"><input type="checkbox" id="selectAll"/></th>
+        <th width="50">价格</th>
+        <th width="150">数量</th>
+        <th width="50">小计</th>
+    </tr>
+    </thead>
+    <tbody id="tBody">
+
+    <tr>
+        <td><input type="checkbox"></td>
+        <td>10.00</td>
+        <td>
+            <input type="button" value="-" onclick="sub(this)" />
+            <input type="text" value="0" />
+            <input type="button" value="+" onclick="add(this)" />
+        </td>
+        <td>0.00</td>
+    </tr>
+    <tr>
+        <td><input type="checkbox"></td>
+        <td>20.00</td>
+        <td>
+            <input type="button" value="-" onclick="sub(this)" />
+            <input type="text" value="0" />
+            <input type="button" value="+" onclick="add(this)" />
+        </td>
+        <td>0.00</td>
+    </tr>
+    <tr>
+        <td><input type="checkbox"></td>
+        <td>30.00</td>
+        <td>
+            <input type="button" value="-" onclick="sub(this)" />
+            <input type="text" value="0" />
+            <input type="button" value="+" onclick="add(this)" />
+        </td>
+        <td>0.00</td>
+    </tr>
+    </tbody>
+</table>
+<div>总计：<span id="q4">0.00</span></div>
+<script src="../jquery/jquery-2.1.1.min.js"></script>
+<script>
+
+    $("#selectAll").click(function () {
+        var a = 0;
+        if (this.checked){
+            $("#tBody :checkbox").attr("checked",true);
+            a++;
+            console.log(a);
+        } else if(!this.checked) {
+            $("#tBody :checkbox").attr("checked",true);
+            a++;
+            console.log(++a);
+        }
+
+    })
+</script>
+</body>
+</html>

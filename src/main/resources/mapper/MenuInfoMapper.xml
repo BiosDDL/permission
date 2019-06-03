@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.MenuInfoMapper">
+
+    <resultMap id="menuInfoMap" type="com.qf.dto.MenuInfoDto">
+        <id  column="menuId" property="id"></id>
+        <result column="parentid" property="pid"></result>
+        <result column="menuName" property="name"></result>
+        <result column="menu_url" property="url"></result>
+        <result column="menuicon" property="icon"></result>
+        <collection property="children" ofType="com.qf.dto.MenuInfoDto">
+            <id column="c_id" property="id"></id>
+            <result column="c_parentid" property="pid"></result>
+            <result column="c_name" property="name"></result>
+            <result column="c_url" property="url"></result>
+            <result column="c_icon" property="icon"></result>
+            <result column="checked" property="checked"></result>
+        </collection>
+    </resultMap>
+
+    <insert id="insertMenu" parameterType="com.qf.dto.MenuDto2">
+        insert into role_menu(rmid,roleid,menuid) values
+        <foreach collection="menuIds" item="item" index="index" separator=",">
+        (default,#{roleId},#{item})
+    </foreach>
+    </insert>
+
+    <delete id="deleteMenu" parameterType="int">
+        delete from role_menu where roleId=#{roleId}
+    </delete>
+
+
+    <select id="listMenu" parameterType="int" resultMap="menuInfoMap">
+        SELECT tb1.*,ISNULL(tb2.menuid) checked
+        FROM (SELECT m1.*,m2.menuid c_id,m2.menuname c_name,m2.menu_url c_url,m2.menuicon c_icon,m2.parentid c_parentid
+        FROM
+        menuinfo m1,menuinfo m2
+        WHERE m2.parentid=m1.menuid) tb1 LEFT JOIN (SELECT * FROM role_menu WHERE roleid=#{roleId}) tb2 ON tb2.menuid = tb1.c_id;
+    </select>
+
+    <select id="listMenuByUserId" parameterType="int" resultMap="menuInfoMap">
+        SELECT m1.*,m2.menuicon c_icon,m2.menuid c_id,m2.menuname c_name,m2.menu_url c_url,m2.parentid c_pid
+        FROM menuinfo m1,menuinfo m2 WHERE m2.menuid IN
+        (SELECT menuid FROM (SELECT ur.* FROM userinfo u,user_role ur,roleinfo r
+        WHERE u.userid=ur.userid AND ur.roleid=r.roleid AND u.userid=#{userId}) tb1
+        LEFT JOIN role_menu rm ON tb1.roleid=rm.roleid GROUP BY menuid) AND m1.menuid = m2.parentid
+    </select>
+
+</mapper>

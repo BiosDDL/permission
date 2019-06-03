@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .tree li {
+            list-style-type: none;
+            cursor:pointer;
+        }
+        table tbody tr:nth-child(odd){background:#F4F4F4;}
+        table tbody td:nth-child(even){color:#C00;}
+    </style>
+</head>
+<body>
+    <div class="col-sm-3 col-md-2 sidebar">
+        <div class="tree">
+            <ul id="listul" style="padding-left:0px;" class="list-group">
+                <li class="list-group-item tree-closed" >
+                    <a href="main.html"><i class="glyphicon glyphicon-dashboard"></i> 控制面板</a>
+                </li>
+
+                <li class="list-group-item tree-closed" >
+                    <a href="param.html"><i class="glyphicon glyphicon-list-alt"></i> 参数管理</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="jquery/jquery-2.1.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="script/docs.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+
+            $.ajax({
+                type:"get",
+                url:"/listMenuByUserId",
+                contentType:"application/json",
+                success:function (data) {
+                    console.log(data);
+                    var beginHtml=""
+                    $(data).each(function (index,item) {
+                        if (index==0){
+                            beginHtml+="<li class=\"list-group-item\">\n" +
+                                "                    <span><i class=\"glyphicon glyphicon glyphicon-tasks\"></i>"+ item.name+ "<span class=\"badge\" style=\"float:right\">"+item.children.length+"</span></span>\n" +
+                                "                    <ul style=\"margin-top:10px; display: block\">"
+                        } else {
+                            beginHtml+="<li class=\"list-group-item tree-closed\">" +
+                                "                    <span><i class=\"glyphicon glyphicon glyphicon-tasks\"></i>"+ item.name+ "<span class=\"badge\" style=\"float:right\">"+item.children.length+"</span></span>\n" +
+                                "                    <ul style=\"margin-top:10px; display: none\">"
+                        }
+
+                        $(item.children).each(function (index2,item2) {
+                            beginHtml+="<li style=\"height:30px;\">\n" +
+                                "                            <a href=\"cert.html\"><i class=\"glyphicon glyphicon-picture\"></i>"+ item2.name+"</a>\n" +
+                                "                        </li>"
+                        })
+                        beginHtml+="</ul></li>";
+
+                    });
+                    $("#listul").append(beginHtml);
+
+
+                    $(".list-group-item").click(function(){
+                        if ( $(this).find("ul") ) {
+                            $(this).toggleClass("tree-closed");
+                            if ( $(this).hasClass("tree-closed") ) {
+                                $("ul", this).hide("fast");
+                            } else {
+                                $("ul", this).show("fast");
+                            }
+                        }
+                    });
+
+
+                },
+                error:function (data) {
+                    console.error(data);
+                },
+                dataType:"json"
+            });
+
+
+        });
+
+
+        </script>
+
+</body>
+</html>

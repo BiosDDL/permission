@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.RoleInfoMapper">
+
+    <insert id="insertByRoleArr" parameterType="com.qf.dto.RoleDto2">
+        insert into user_role(urid,userid,roleid) values
+        <foreach collection="roleArr" item="item" index="index" separator=",">
+            (default,#{userId},#{item})
+        </foreach>
+
+    </insert>
+
+    <delete id="deleteByUserId" parameterType="int">
+        delete from user_role where userid=#{userid}
+    </delete>
+
+    <select id="listAllRoleInfo" resultType="com.qf.vo.RoleInfoVo">
+        select * from roleinfo
+    </select>
+
+    <select id="searchRoleInfo" parameterType="com.qf.vo.RoleInfoVo" resultType="com.qf.dto.RoleDto">
+        select * from roleinfo
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and rolename like "%"#{roleName}"%"
+            </if>
+            <if test="shortName != null and shortName != ''">
+                and shortname like "%"#{shortName}"%"
+              </if>
+        </where>
+    </select>
+
+
+</mapper>
